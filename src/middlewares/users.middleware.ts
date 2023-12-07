@@ -64,6 +64,30 @@ const confirmPasswordSchema: ParamSchema = {
   }
 }
 
+const userNotFoundSchema: ParamSchema = {
+  trim: true,
+  notEmpty: {
+    errorMessage: new ErrorWithStatus({
+      status: HTTP_STATUS.BAD_REQUEST,
+      message: USER_MESSAGES.USER_ID_REQUIRED
+    })
+  },
+  custom: {
+    options: async (value) => {
+      const isUserExist = await usersServices.findUniq(value)
+
+      if (!isUserExist) {
+        throw new ErrorWithStatus({
+          status: HTTP_STATUS.NOT_FOUND,
+          message: USER_MESSAGES.USER_NOT_FOUND
+        })
+      }
+
+      return true
+    }
+  }
+}
+
 export const loginValidator = validate(
   checkSchema(
     {
@@ -226,23 +250,16 @@ export const refreshTokenValidator = validate(
 export const getUserByIdValidator = validate(
   checkSchema(
     {
-      id: {
-        trim: true,
-        notEmpty: {
-          errorMessage: USER_MESSAGES.USER_ID_REQUIRED
-        },
-        custom: {
-          options: async (value) => {
-            const isUserExist = await usersServices.findUniq(value)
+      id: userNotFoundSchema
+    },
+    ['query']
+  )
+)
 
-            if (!isUserExist) {
-              throw new Error(USER_MESSAGES.USER_NOT_FOUND)
-            }
-
-            return true
-          }
-        }
-      }
+export const deleteByIdValidator = validate(
+  checkSchema(
+    {
+      id: userNotFoundSchema
     },
     ['query']
   )

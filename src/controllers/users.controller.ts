@@ -25,7 +25,10 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
   })
 }
 
-export const viewUserProfile = async (req: Request<any, any, any, ViewProfileRequestQuery>, res: Response) => {
+export const viewUserProfileController = async (
+  req: Request<any, any, any, ViewProfileRequestQuery>,
+  res: Response
+) => {
   const result = await usersServices.findUniq(req.query.id)
 
   const response = {
