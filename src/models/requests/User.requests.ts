@@ -1,4 +1,5 @@
 import { JwtPayload } from 'jsonwebtoken'
+import { ObjectId } from 'mongodb'
 import { TokenType } from '~/constants/enums'
 
 export interface RegisterRequestBody {
@@ -21,4 +22,8 @@ export interface LogoutRequestBody {
 export interface TokenPayload extends JwtPayload {
   user_id: string
   token_type: TokenType
+}
+
+export interface ViewProfileRequestQuery {
+  id?: ObjectId
 }

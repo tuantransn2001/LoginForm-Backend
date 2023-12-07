@@ -6,7 +6,7 @@ import User from '~/models/schemas/User.schema'
 
 config()
 
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.xgsussr.mongodb.net/?retryWrites=true&w=majority`
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.ffdweqe.mongodb.net/?retryWrites=true&w=majority`
 
 class Database {
   private client: MongoClient

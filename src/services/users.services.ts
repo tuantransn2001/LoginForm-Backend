@@ -49,7 +49,7 @@ class UsersService {
       new User({
         ...payload,
         _id: user_id,
-        password: hashPassword(payload.password),
+        password_hash: hashPassword(payload.password),
         phone_number: payload.phone_number
       })
     )
@@ -59,7 +59,7 @@ class UsersService {
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
 
-    return { access_token, refresh_token }
+    return { access_token, refresh_token, user_id }
   }
 
   async login(user_id: string) {
@@ -78,6 +78,11 @@ class UsersService {
 
   async checkPhoneNumberExist(phone_number: string) {
     const user = await instanceMongodb.users.findOne({ phone_number })
+    return user
+  }
+
+  async findUniq(_id?: ObjectId) {
+    const user = await instanceMongodb.users.findOne({ _id: new ObjectId(_id) })
     return user
   }
 
