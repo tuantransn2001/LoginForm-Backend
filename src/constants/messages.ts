@@ -7,6 +7,7 @@ export const USER_MESSAGES = {
   EMAIL_IS_REQUIRED: 'Email is required',
   EMAIL_IS_INVALID: 'Email is invalid',
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
+  USER_ID_REQUIRED: 'User _id is required',
   PHONE_NUMBER_IS_REQUIRED: 'Phone number is required',
   PHONE_NUMBER_IS_INVALID: 'Phone number is invalid',
   PHONE_NUMBER_ALREADY_EXISTS: 'Phone number already exists',
