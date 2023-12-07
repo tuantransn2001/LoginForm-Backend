@@ -222,3 +222,28 @@ export const refreshTokenValidator = validate(
     ['body']
   )
 )
+
+export const getUserByIdValidator = validate(
+  checkSchema(
+    {
+      id: {
+        trim: true,
+        notEmpty: {
+          errorMessage: USER_MESSAGES.USER_ID_REQUIRED
+        },
+        custom: {
+          options: async (value) => {
+            const isUserExist = await usersServices.findUniq(value)
+
+            if (!isUserExist) {
+              throw new Error(USER_MESSAGES.USER_NOT_FOUND)
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['query']
+  )
+)
