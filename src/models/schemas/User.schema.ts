@@ -55,4 +55,18 @@ export default class User {
     this.created_at = user.created_at || date
     this.updated_at = user.updated_at || date
   }
+
+  static toDto(user?: UserType | null) {
+    return {
+      id: user?._id || '',
+      city: user?.city || '',
+      role: user?.role || '',
+      email: user?.email || '',
+      address: user?.address || '',
+      name: user?.name || '',
+      avatarUrl: user?.avatarUrl || '',
+      phoneNumber: user?.phone_number || '',
+      status: user?.status || ''
+    }
+  }
 }

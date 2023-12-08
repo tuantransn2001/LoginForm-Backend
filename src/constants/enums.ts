@@ -7,7 +7,7 @@ export enum UserVerifyStatus {
 export enum TokenType {
   AccessToken,
   RefreshToken,
-  ForgotPasswordToken,
+  ForgotPasswordToken
 }
 
 export enum VerifyOP {

@@ -5,7 +5,7 @@ import { ParamsDictionary } from 'express-serve-static-core'
 import User from '~/models/schemas/User.schema'
 import USER_MESSAGES from '~/constants/messages'
 import usersServices from '~/services/users.services'
-import { LoginRequestBody, RegisterRequestBody, ViewProfileRequestQuery } from '~/models/requests/User.requests'
+import { LoginRequestBody, RegisterRequestBody, GetUserByIdRequestQuery } from '~/models/requests/User.requests'
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {
   const user = req.user as User
@@ -13,7 +13,7 @@ export const loginController = async (req: Request<ParamsDictionary, any, LoginR
   const result = await usersServices.login(user_id.toString())
   return res.json({
     message: USER_MESSAGES.LOGIN_SUCCESS,
-    result
+    response: result
   })
 }
 
@@ -21,31 +21,30 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
   const result = await usersServices.register(req.body)
   return res.json({
     message: USER_MESSAGES.REGISTER_SUCCESS,
-    result
+    response: result
   })
 }
 
-export const viewUserProfileController = async (
-  req: Request<any, any, any, ViewProfileRequestQuery>,
-  res: Response
-) => {
+export const getUserByIdController = async (req: Request<any, any, any, GetUserByIdRequestQuery>, res: Response) => {
   const result = await usersServices.findUniq(req.query.id)
 
   const response = {
-    id: result?._id,
-    city: result?.city,
-    role: result?.role,
-    email: result?.email,
-    address: result?.address,
-    name: result?.name,
-    avatarUrl: result?.avatarUrl,
-    phoneNumber: result?.phone_number,
-    status: result?.status,
+    ...User.toDto(result),
     timeline: []
   }
 
   return res.json({
     message: USER_MESSAGES.GET_ME_SUCCESS,
+    response
+  })
+}
+
+export const deleteUserByIdController = async (req: Request<any, any, any, GetUserByIdRequestQuery>, res: Response) => {
+  const result = await usersServices.hardDeleteOne(req.query.id)
+  const response = User.toDto(result)
+
+  return res.json({
+    message: USER_MESSAGES.DELETE_USER_SUCCESS,
     response
   })
 }

@@ -59,7 +59,7 @@ class UsersService {
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
 
-    return { access_token, refresh_token, user_id }
+    return { access_token, refresh_token }
   }
 
   async login(user_id: string) {
@@ -84,6 +84,13 @@ class UsersService {
   async findUniq(_id?: ObjectId) {
     const user = await instanceMongodb.users.findOne({ _id: new ObjectId(_id) })
     return user
+  }
+
+  async hardDeleteOne(_id?: ObjectId) {
+    const result = await instanceMongodb.users.findOneAndDelete({
+      _id: new ObjectId(_id)
+    })
+    return result
   }
 
   async checkLoginValid(email: string, password: string) {

@@ -1,6 +1,11 @@
 import express from 'express'
 
-import { loginController, registerController, viewUserProfileController } from '~/controllers/users.controller'
+import {
+  deleteUserByIdController,
+  loginController,
+  registerController,
+  getUserByIdController
+} from '~/controllers/users.controller'
 import {
   deleteByIdValidator,
   getUserByIdValidator,
@@ -34,7 +39,7 @@ usersRouter.post('/register', registerValidator, wrapRequestHandler(registerCont
  * @query id
  * @access public
  */
-usersRouter.get('/', getUserByIdValidator, wrapRequestHandler(viewUserProfileController))
+usersRouter.get('/', getUserByIdValidator, wrapRequestHandler(getUserByIdController))
 
 // todo... PATCH
 /**
@@ -50,6 +55,6 @@ usersRouter.get('/', getUserByIdValidator, wrapRequestHandler(viewUserProfileCon
  * @query id
  * @access public
  */
-usersRouter.delete('/', deleteByIdValidator)
+usersRouter.delete('/', deleteByIdValidator, wrapRequestHandler(deleteUserByIdController))
 
 export default usersRouter

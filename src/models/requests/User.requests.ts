@@ -24,6 +24,8 @@ export interface TokenPayload extends JwtPayload {
   token_type: TokenType
 }
 
-export interface ViewProfileRequestQuery {
+export interface GetUserByIdRequestQuery {
   id?: ObjectId
 }
+
+export interface DeleteUserByIdRequestQuery extends GetUserByIdRequestQuery {}
