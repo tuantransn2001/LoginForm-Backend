@@ -4,6 +4,13 @@ export enum UserVerifyStatus {
   Banned
 }
 
+export enum UserStatus {
+  Official,
+  Probationary,
+  Collaborate,
+  Resigned
+}
+
 export enum TokenType {
   AccessToken,
   RefreshToken,

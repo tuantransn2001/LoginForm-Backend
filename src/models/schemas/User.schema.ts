@@ -1,19 +1,19 @@
 import { ObjectId } from 'mongodb'
-import { UserVerifyStatus } from '~/constants/enums'
+import { UserStatus, UserVerifyStatus } from '~/constants/enums'
 
-interface UserType {
+export interface UserType {
   _id?: ObjectId
   city?: string
   role?: string
   email?: string
   address?: string
   name?: string
-  avatarUrl?: string
+  avatar_url?: string
   phone_number?: string
   password_hash?: string
-  status?: string
   email_verify_token?: string
   forgot_password_token?: string
+  status?: UserStatus
   verify?: UserVerifyStatus
   created_at?: Date
   updated_at?: Date
@@ -26,12 +26,12 @@ export default class User {
   email?: string
   address?: string
   name?: string
-  avatarUrl?: string
+  avatar_url?: string
   phone_number?: string
   password_hash?: string
-  status?: string
   email_verify_token?: string
   forgot_password_token?: string
+  status?: UserStatus
   verify?: UserVerifyStatus
   created_at?: Date
   updated_at?: Date
@@ -45,13 +45,13 @@ export default class User {
     this.email = user.email || ''
     this.address = user.address || ''
     this.name = user.name || ''
-    this.avatarUrl = user.avatarUrl || ''
+    this.avatar_url = user.avatar_url || ''
     this.phone_number = user.phone_number || ''
     this.password_hash = user.password_hash || ''
-    this.status = user.status || ''
     this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
     this.verify = user.verify || UserVerifyStatus.Unverified
+    this.status = user.status || UserStatus.Official
     this.created_at = user.created_at || date
     this.updated_at = user.updated_at || date
   }
@@ -64,8 +64,8 @@ export default class User {
       email: user?.email || '',
       address: user?.address || '',
       name: user?.name || '',
-      avatarUrl: user?.avatarUrl || '',
-      phoneNumber: user?.phone_number || '',
+      avatar_url: user?.avatar_url || '',
+      phone_number: user?.phone_number || '',
       status: user?.status || ''
     }
   }

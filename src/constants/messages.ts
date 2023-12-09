@@ -40,6 +40,7 @@ export const USER_MESSAGES = {
   USED_REFRESH_TOKEN_OR_NOT_EXIST: 'Used refresh token or not exist',
   EMAIL_VERIFY_TOKEN_IS_REQUIRED: 'Email verify token is required',
   DELETE_USER_SUCCESS: 'Delete user success',
+  UPDATE_USER_SUCCESS: 'Update user success',
   EMAIL_ALREADY_VERIFIED_BEFORE: 'Email already verified before',
   EMAIL_VERIFY_SUCCESS: 'Email verify success',
   RESEND_VERIFY_EMAIL_SUCCESS: 'Resend verify email success',
@@ -48,7 +49,8 @@ export const USER_MESSAGES = {
   VERIFY_FORGOT_PASSWORD_SUCCESS: 'Verify forgot password success',
   FORGOT_PASSWORD_TOKEN_IS_INVALID: 'Forgot password token is invalid',
   RESET_PASSWORD_SUCCESS: 'Reset password success',
-  GET_ME_SUCCESS: 'Get profile success'
+  GET_ME_SUCCESS: 'Get profile success',
+  UPLOAD_AVATAR_SUCCESS: 'Upload avatar success'
 } as const
 
 export default USER_MESSAGES

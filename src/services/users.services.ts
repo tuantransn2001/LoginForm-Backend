@@ -8,7 +8,7 @@ import { TokenType } from '~/constants/enums'
 import User from '~/models/schemas/User.schema'
 import instanceMongodb from './database.services'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
-import { RegisterRequestBody } from '~/models/requests/User.requests'
+import { RegisterRequestBody, UpdateUserRequestBody } from '~/models/requests/User.requests'
 
 config()
 
@@ -90,6 +90,19 @@ class UsersService {
     const result = await instanceMongodb.users.findOneAndDelete({
       _id: new ObjectId(_id)
     })
+    return result
+  }
+
+  async updateOne(payload: UpdateUserRequestBody) {
+    const { id, ...rest } = payload
+    const result = await instanceMongodb.users
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { ...rest } },
+        { includeResultMetadata: true, returnDocument: 'after' }
+      )
+      .then((response) => User.toDto(response.value))
+
     return result
   }
 
