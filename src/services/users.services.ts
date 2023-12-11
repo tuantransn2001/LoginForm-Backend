@@ -8,7 +8,7 @@ import { TokenType } from '~/constants/enums'
 import User from '~/models/schemas/User.schema'
 import instanceMongodb from './database.services'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
-import { RegisterRequestBody } from '~/models/requests/User.requests'
+import { RegisterRequestBody, UpdateUserRequestBody } from '~/models/requests/User.requests'
 
 config()
 
@@ -59,7 +59,7 @@ class UsersService {
       new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
     )
 
-    return { access_token, refresh_token, user_id }
+    return { access_token, refresh_token }
   }
 
   async login(user_id: string) {
@@ -84,6 +84,26 @@ class UsersService {
   async findUniq(_id?: ObjectId) {
     const user = await instanceMongodb.users.findOne({ _id: new ObjectId(_id) })
     return user
+  }
+
+  async hardDeleteOne(_id?: ObjectId) {
+    const result = await instanceMongodb.users.findOneAndDelete({
+      _id: new ObjectId(_id)
+    })
+    return result
+  }
+
+  async updateOne(payload: UpdateUserRequestBody) {
+    const { id, ...rest } = payload
+    const result = await instanceMongodb.users
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { ...rest } },
+        { includeResultMetadata: true, returnDocument: 'after' }
+      )
+      .then((response) => User.toDto(response.value))
+
+    return result
   }
 
   async checkLoginValid(email: string, password: string) {
