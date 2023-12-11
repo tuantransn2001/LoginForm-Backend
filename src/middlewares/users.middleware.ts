@@ -93,15 +93,14 @@ const userPhoneExistSchema: ParamSchema = {
   custom: {
     options: async (value) => {
       const isExistPhoneNumber = await usersServices.checkPhoneNumberExist(value)
-      console.log({ isExistPhoneNumber })
       if (isExistPhoneNumber) {
         throw new Error(USER_MESSAGES.PHONE_NUMBER_ALREADY_EXISTS)
       }
-
       return true
     }
   }
 }
+
 const userPhoneCorrectSchema: ParamSchema = {
   isMobilePhone: {
     options: ['vi-VN'],
@@ -109,6 +108,7 @@ const userPhoneCorrectSchema: ParamSchema = {
   },
   trim: true
 }
+
 const userPhoneRequiredSchema: ParamSchema = {
   notEmpty: {
     errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_REQUIRED
