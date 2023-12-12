@@ -9,6 +9,7 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import USER_MESSAGES from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import usersServices from '~/services/users.services'
+import { UserStatus } from '~/constants/enums'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -64,45 +65,96 @@ const confirmPasswordSchema: ParamSchema = {
   }
 }
 
+const userNotFoundSchema: ParamSchema = {
+  trim: true,
+  notEmpty: {
+    errorMessage: new ErrorWithStatus({
+      status: HTTP_STATUS.BAD_REQUEST,
+      message: USER_MESSAGES.USER_ID_REQUIRED
+    })
+  },
+  custom: {
+    options: async (value) => {
+      const isUserExist = await usersServices.findUniq(value)
+
+      if (!isUserExist) {
+        throw new ErrorWithStatus({
+          status: HTTP_STATUS.NOT_FOUND,
+          message: USER_MESSAGES.USER_NOT_FOUND
+        })
+      }
+
+      return true
+    }
+  }
+}
+
+const userPhoneExistSchema: ParamSchema = {
+  custom: {
+    options: async (value) => {
+      const isExistPhoneNumber = await usersServices.checkPhoneNumberExist(value)
+      if (isExistPhoneNumber) {
+        throw new Error(USER_MESSAGES.PHONE_NUMBER_ALREADY_EXISTS)
+      }
+      return true
+    }
+  }
+}
+
+const userPhoneCorrectSchema: ParamSchema = {
+  isMobilePhone: {
+    options: ['vi-VN'],
+    errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID
+  },
+  trim: true
+}
+
+const userPhoneRequiredSchema: ParamSchema = {
+  notEmpty: {
+    errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_REQUIRED
+  }
+}
+
+const userLoginValidSchema: ParamSchema = {
+  custom: {
+    options: async (value, { req }) => {
+      const user = await usersServices.checkLoginValid(value, req.body.password)
+      if (!user) {
+        throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
+      }
+      req.user = user
+
+      return true
+    }
+  }
+}
+
+const userCorrectEmailSchema: ParamSchema = {
+  isEmail: {
+    errorMessage: USER_MESSAGES.EMAIL_IS_INVALID
+  },
+  trim: true
+}
+
+const userEmailExistSchema: ParamSchema = {
+  custom: {
+    options: async (value, { req }) => {
+      const user = await usersServices.checkEmailExist(req.body.email)
+      if (!user) {
+        throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTS)
+      }
+      req.user = user
+
+      return true
+    }
+  }
+}
+
 export const loginValidator = validate(
   checkSchema(
     {
-      email: {
-        isEmail: {
-          errorMessage: USER_MESSAGES.EMAIL_IS_INVALID
-        },
-        trim: true,
-        custom: {
-          options: async (value, { req }) => {
-            const user = await usersServices.checkLoginValid(value, req.body.password)
-            if (!user) {
-              throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
-            }
-            req.user = user
-
-            return true
-          }
-        }
-      },
-      password: {
-        isLength: {
-          options: {
-            min: 6,
-            max: 50
-          },
-          errorMessage: USER_MESSAGES.PASSWORD_LENGTH_MUST_BE_FROM_6_TO_50
-        },
-        isStrongPassword: {
-          options: {
-            minLength: 6,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1,
-            minSymbols: 1
-          },
-          errorMessage: USER_MESSAGES.PASSWORD_MUST_BE_STRONG
-        }
-      }
+      email: { ...userLoginValidSchema, ...userCorrectEmailSchema },
+      password: passwordSchema
     },
     ['body']
   )
@@ -111,26 +163,7 @@ export const loginValidator = validate(
 export const registerValidator = validate(
   checkSchema(
     {
-      phone_number: {
-        notEmpty: {
-          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_REQUIRED
-        },
-        isMobilePhone: {
-          options: ['vi-VN'],
-          errorMessage: USER_MESSAGES.PHONE_NUMBER_IS_INVALID
-        },
-        trim: true,
-        custom: {
-          options: async (value) => {
-            const isExistPhoneNumber = await usersServices.checkPhoneNumberExist(value)
-            if (isExistPhoneNumber) {
-              throw new Error(USER_MESSAGES.PHONE_NUMBER_ALREADY_EXISTS)
-            }
-
-            return true
-          }
-        }
-      },
+      phone_number: { ...userPhoneCorrectSchema, ...userPhoneRequiredSchema, ...userPhoneExistSchema },
       password: passwordSchema,
       confirm_password: confirmPasswordSchema
     },
@@ -222,3 +255,42 @@ export const refreshTokenValidator = validate(
     ['body']
   )
 )
+
+export const getUserByIdValidator = validate(
+  checkSchema(
+    {
+      id: userNotFoundSchema
+    },
+    ['query']
+  )
+)
+
+export const deleteByIdValidator = validate(
+  checkSchema(
+    {
+      id: userNotFoundSchema
+    },
+    ['query']
+  )
+)
+
+export const updateUserByIdValidator = validate(
+  checkSchema(
+    {
+      id: userNotFoundSchema,
+      email: {
+        optional: true,
+        ...userCorrectEmailSchema,
+        ...userEmailExistSchema
+      },
+      phone_number: { optional: true, ...userPhoneCorrectSchema, ...userPhoneExistSchema },
+      status: {
+        isIn: { options: [Object.values(UserStatus)] },
+        errorMessage: 'Invalid status' + ' ' + 'status must: ' + Object.values(UserStatus)
+      }
+    },
+    ['body']
+  )
+)
+
+export const uploadUserAvatarValidator = validate(checkSchema({ id: userNotFoundSchema }, ['query']))
