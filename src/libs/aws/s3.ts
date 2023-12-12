@@ -32,7 +32,7 @@ class AWSS3 {
         const params: AWS.S3.GetObjectRequest = {
           Bucket: process.env.AWS_S3_BUCKET_NAME as string,
           Key: uniqKey,
-          Expires: 30 * 60
+          Expires: DateTime.Now.AddDays(365)
         }
 
         const signedUrl = this.s3.getSignedUrl('getObject', params)
