@@ -9,6 +9,7 @@ const app = express()
 const port = 8002
 
 app.use(express.json())
+
 app.use('/api', rootRouter)
 
 app.use(defaultErrorHandler)
