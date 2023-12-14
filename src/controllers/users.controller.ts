@@ -9,9 +9,34 @@ import {
   RegisterRequestBody,
   GetUserByIdRequestQuery,
   UpdateUserRequestBody,
-  UploadUserAvatarRequestQuery
+  UploadUserAvatarRequestQuery,
+  GetAllUserRequestQuery
 } from '~/models/requests/User.requests'
 import S3Service from '~/libs/aws/s3'
+
+export const getAllUserController = async (
+  req: Request<ParamsDictionary, any, any, GetAllUserRequestQuery>,
+  res: Response
+) => {
+  const response = await usersServices.findAll({
+    offset: req.query.offset,
+    limit: req.query.limit
+  })
+  return res.json({
+    message: USER_MESSAGES.GET_ALL_USERS_SUCCESS,
+    response
+  })
+}
+
+export const getMeController = async (req: Request, res: Response) => {
+  const current_user = await usersServices
+    .findUniq(new ObjectId(req.decoded_authorization?.user_id))
+    .then((response) => User.toDto(response))
+  return res.json({
+    message: USER_MESSAGES.GET_ME_SUCCESS,
+    response: current_user
+  })
+}
 
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {
   const user = req.user as User
@@ -31,13 +56,12 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
   })
 }
 
-export const getUserByIdController = async (req: Request<any, any, any, GetUserByIdRequestQuery>, res: Response) => {
+export const getUserByIdController = async (
+  req: Request<ParamsDictionary, any, any, GetUserByIdRequestQuery>,
+  res: Response
+) => {
   const result = await usersServices.findUniq(req.query.id)
-
-  const response = {
-    ...User.toDto(result),
-    timeline: []
-  }
+  const response = User.toDto(result)
 
   return res.json({
     message: USER_MESSAGES.GET_ME_SUCCESS,
@@ -50,23 +74,24 @@ export const updateUserByIdController = async (
   res: Response
 ) => {
   const result = await usersServices.updateOne(req.body)
-
   return res.json({
     message: USER_MESSAGES.UPDATE_USER_SUCCESS,
     response: result
   })
 }
 
-export const deleteUserByIdController = async (req: Request<any, any, any, GetUserByIdRequestQuery>, res: Response) => {
-  await usersServices.hardDeleteOne(req.query.id)
-
+export const deleteUserByIdController = async (
+  req: Request<ParamsDictionary, any, any, GetUserByIdRequestQuery>,
+  res: Response
+) => {
+  await usersServices.softDeleteOne(req.query.id)
   return res.json({
     message: USER_MESSAGES.DELETE_USER_SUCCESS
   })
 }
 
 export const uploadUserAvatarController = async (
-  req: Request<any, any, any, UploadUserAvatarRequestQuery>,
+  req: Request<ParamsDictionary, any, any, UploadUserAvatarRequestQuery>,
   res: Response
 ) => {
   // default size: w:490 , h:510

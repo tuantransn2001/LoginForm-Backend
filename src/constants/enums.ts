@@ -1,23 +1,39 @@
 export enum UserVerifyStatus {
-  Unverified,
-  Verified,
-  Banned
+  Unverified = 'Chưa xác thực',
+  Verified = 'Đã xác thực',
+  Banned = 'Đã khóa'
 }
 
 export enum UserStatus {
-  Official,
-  Probationary,
-  Collaborate,
-  Resigned
+  Official = 'Chính thức',
+  Probationary = 'Thử việc',
+  Collaborate = 'Hợp tác',
+  Resigned = 'Đã nghỉ'
+}
+
+export enum CustomerTitle {
+  Mr = 'Ông',
+  Mrs = 'Bà'
+}
+
+export enum UserDepartment {
+  Technology = 'Phòng công nghệ',
+  Sale = 'Phòng kinh doanh',
+  Marketing = 'Phòng marketing'
+}
+
+export enum UserRole {
+  Tech = 'Công nghệ',
+  Sale = 'Kinh doanh'
 }
 
 export enum TokenType {
-  AccessToken,
-  RefreshToken,
-  ForgotPasswordToken
+  AccessToken = 'access_token',
+  RefreshToken = 'refresh_token',
+  ForgotPasswordToken = 'forgot_password_token'
 }
 
 export enum VerifyOP {
-  Phone,
-  Email
+  Phone = 'phone',
+  Email = 'email'
 }

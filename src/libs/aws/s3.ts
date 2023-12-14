@@ -32,7 +32,7 @@ class AWSS3 {
         const params: AWS.S3.GetObjectRequest = {
           Bucket: process.env.AWS_S3_BUCKET_NAME as string,
           Key: uniqKey,
-          Expires: DateTime.Now.AddDays(365)
+          Expires: 30 * 60
         }
 
         const signedUrl = this.s3.getSignedUrl('getObject', params)
@@ -76,7 +76,6 @@ class AWSS3 {
 
           d.name = name
           res.data.push(d)
-
           if (
             options &&
             options.resize &&
