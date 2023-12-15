@@ -13,8 +13,6 @@ import USER_MESSAGES from '~/constants/messages'
 import Customer, { CustomerType } from '~/models/schemas/Customer.schema'
 import S3Service from '~/libs/aws/s3'
 import { ObjectId } from 'mongodb'
-import { ErrorWithStatus } from '~/models/Errors'
-import HTTP_STATUS from '~/constants/httpStatus'
 
 export const getAllCustomerController = async (
   req: Request<ParamsDictionary, any, any, GetAllCustomerRequestQuery>,

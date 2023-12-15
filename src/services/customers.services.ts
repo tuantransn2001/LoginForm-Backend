@@ -5,12 +5,14 @@ import { UpdateCustomerRequestBody } from '~/models/requests/Customer.requests'
 
 class CustomersService {
   async findAll({ offset, limit }: { offset?: number; limit?: number }) {
+    const _limit = limit ? limit : 10
+    const _skip = offset ? (offset - 1) * _limit : 0
     const users = await instanceMongodb.customers
       .find({
         is_deleted: false
       })
-      .skip(offset ? offset : 0)
-      .limit(limit ? limit : 10)
+      .skip(Number(_skip))
+      .limit(Number(_limit))
       .toArray()
       .then((customers) => customers.map((customer) => Customer.toDto(customer)))
     return users
