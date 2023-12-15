@@ -11,23 +11,23 @@ pipeline {
     stages {
         stage('Build-Images') {
             steps {
-                sh "docker build -t bixso-backend-devtest:${BUILD_NUMBER} ."
+                sh "docker build -t bixso-backend-devtest-internalapp-internalapp:${BUILD_NUMBER} ."
             }
         }
         stage('SSH-Remote-Deploy'){
             steps
             {
-            sh "docker save -o bixso-backend-devtest.tar bixso-backend-devtest:${BUILD_NUMBER}"
+            sh "docker save -o bixso-backend-devtest-internalapp.tar bixso-backend-devtest-internalapp:${BUILD_NUMBER}"
 
             sshPublisher(publishers: [sshPublisherDesc(configName: 'bixso-backend-devtest',
             transfers: [sshTransfer(cleanRemote: false, excludes: '',
-            execCommand: "docker rm -f bixso-backend-devtest;docker rmi \$(docker images -a -q);docker load -i bixso-backend-devtest.tar;docker run -idt --name bixso-backend-devtest -p 8001:8001 bixso-backend-devtest:${BUILD_NUMBER}",
+            execCommand: "docker rm -f bixso-backend-devtest-internalapp;docker rmi \$(docker images -a -q);docker load -i bixso-backend-devtest-internalapp.tar;docker run -idt --name bixso-backend-devtest-internalapp -p 8001:8001 bixso-backend-devtest-internalapp:${BUILD_NUMBER}",
             //execCommand: "docker ps",
             execTimeout: 120000,
             flatten: false, makeEmptyDirs: false,
             noDefaultExcludes: false, patternSeparator: '[, ]+',
             remoteDirectory: '', remoteDirectorySDF: false, removePrefix: '',
-            sourceFiles: 'bixso-backend-devtest.tar')],usePromotionTimestamp: false,
+            sourceFiles: 'bixso-backend-devtest-internalapp.tar')],usePromotionTimestamp: false,
             useWorkspaceInPromotion: false,verbose: true)])
             }
             }
