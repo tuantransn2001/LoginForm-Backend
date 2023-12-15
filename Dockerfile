@@ -5,6 +5,7 @@ WORKDIR /app
 COPY . .
 
 RUN npm install
+RUN npm install --force @img/sharp-linux-x64
 
 RUN npm run build
 
