@@ -19,7 +19,7 @@ pipeline {
             {
             sh "docker save -o bixso-backend-devtest-internalapp.tar bixso-backend-devtest-internalapp:${BUILD_NUMBER}"
 
-            sshPublisher(publishers: [sshPublisherDesc(configName: 'bixso-backend-devtest',
+            sshPublisher(publishers: [sshPublisherDesc(configName: 'xeoi-bankend-devtest',
             transfers: [sshTransfer(cleanRemote: false, excludes: '',
             execCommand: "docker rm -f bixso-backend-devtest-internalapp;docker rmi \$(docker images -a -q);docker load -i bixso-backend-devtest-internalapp.tar;docker run -idt --name bixso-backend-devtest-internalapp -p 8001:8001 bixso-backend-devtest-internalapp:${BUILD_NUMBER}",
             //execCommand: "docker ps",
