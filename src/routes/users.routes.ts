@@ -6,7 +6,9 @@ import {
   registerController,
   getUserByIdController,
   updateUserByIdController,
-  uploadUserAvatarController
+  uploadUserAvatarController,
+  getMeController,
+  getAllUserController
 } from '~/controllers/users.controller'
 import { uploadSingleImageMiddleware } from '~/middlewares/upload.middleware'
 import {
@@ -15,12 +17,21 @@ import {
   loginValidator,
   registerValidator,
   updateUserByIdValidator,
-  uploadUserAvatarValidator
+  userUploadSingleFileExistValidator,
+  userUploadExistValidator,
+  getAllUserValidator
 } from '~/middlewares/users.middleware'
 import { wrapRequestHandler } from '~/utils/handlers'
 
 const usersRouter = express.Router()
 
+/**
+ * @route GET /api/users/me
+ * @description get current user login
+ * @headers { Authorization: {{token}} }
+ * @access public
+ */
+usersRouter.get('/me', wrapRequestHandler(getMeController))
 /**
  * @route POST /api/users/login
  * @description customer login
@@ -37,35 +48,43 @@ usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
 // ? ---------------------- Employee ----------------------
 /**
- * @route GET /api/users?id=657181a46f8993d5fee59fbb
- * @description view employee detail
+ * @route GET /api/users
+ * @description view user detail
  * @query { id }
  * @access public
  */
-usersRouter.get('/', getUserByIdValidator, wrapRequestHandler(getUserByIdController))
+usersRouter.get('/', getAllUserValidator, wrapRequestHandler(getAllUserController))
+/**
+ * @route GET /api/users/get-by-id?id=657181a46f8993d5fee59fbb
+ * @description view user detail
+ * @query { id }
+ * @access public
+ */
+usersRouter.get('/get-by-id', getUserByIdValidator, wrapRequestHandler(getUserByIdController))
 /**
  * @route PATCH /api/users
- * @description update employee detail
+ * @description update user detail
  * @body { extends user type }
  * @access public
  */
 usersRouter.patch('/', updateUserByIdValidator, wrapRequestHandler(updateUserByIdController))
 /**
  * @route POST /api/users/avatar?id=657181a46f8993d5fee59fbb
- * @description upload employee avatar
+ * @description upload user avatar
  * @body { file }
  * @query { id }
  * @access public
  */
 usersRouter.post(
   '/avatar',
-  uploadUserAvatarValidator,
+  userUploadExistValidator,
   uploadSingleImageMiddleware('avatar', ['.png']),
+  userUploadSingleFileExistValidator,
   wrapRequestHandler(uploadUserAvatarController)
 )
 /**
  * @route DELETE /api/users?id=657181a46f8993d5fee59fbb
- * @description delete target employee
+ * @description delete target user
  * @query { id }
  * @access public
  */

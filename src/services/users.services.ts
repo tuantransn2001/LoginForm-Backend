@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb'
 
 import { signToken } from '~/utils/jwt'
 import { hashPassword } from '~/utils/crypto'
-import { TokenType } from '~/constants/enums'
+import { TokenType, UserStatus } from '~/constants/enums'
 
 import User from '~/models/schemas/User.schema'
 import instanceMongodb from './database.services'
@@ -72,18 +72,41 @@ class UsersService {
   }
 
   async checkEmailExist(email: string) {
-    const user = await instanceMongodb.users.findOne({ email })
+    const user = await instanceMongodb.users.findOne({ email, is_deleted: false })
     return user
   }
 
   async checkPhoneNumberExist(phone_number: string) {
-    const user = await instanceMongodb.users.findOne({ phone_number })
+    const user = await instanceMongodb.users.findOne({ phone_number, is_deleted: false })
     return user
   }
 
+  async findAll({ offset, limit }: { offset?: number; limit?: number }) {
+    const _limit = limit ? limit : 10
+    const _skip = offset ? (offset - 1) * _limit : 0
+    const users = await instanceMongodb.users
+      .find({
+        is_deleted: false
+      })
+      .skip(Number(_skip))
+      .limit(Number(_limit))
+      .toArray()
+      .then((users) => users.map((user) => User.toDto(user)))
+    return users
+  }
+
   async findUniq(_id?: ObjectId) {
-    const user = await instanceMongodb.users.findOne({ _id: new ObjectId(_id) })
+    const user = await instanceMongodb.users.findOne({ _id: new ObjectId(_id), is_deleted: false })
     return user
+  }
+
+  async softDeleteOne(_id?: ObjectId) {
+    const result = await instanceMongodb.users.findOneAndUpdate(
+      { _id: new ObjectId(_id) },
+      { $set: { is_deleted: true } },
+      { includeResultMetadata: true, returnDocument: 'after' }
+    )
+    return result
   }
 
   async hardDeleteOne(_id?: ObjectId) {
@@ -95,19 +118,39 @@ class UsersService {
 
   async updateOne(payload: UpdateUserRequestBody) {
     const { id, ...rest } = payload
+
     const result = await instanceMongodb.users
       .findOneAndUpdate(
-        { _id: new ObjectId(id) },
+        { _id: new ObjectId(id), is_deleted: false },
         { $set: { ...rest } },
         { includeResultMetadata: true, returnDocument: 'after' }
       )
-      .then((response) => User.toDto(response.value))
+      .then(async (response) => {
+        if (Object.prototype.hasOwnProperty.call(payload, 'status')) {
+          const updateTimeline: { status: UserStatus; start_date: Date }[] = response.value?.time_line || []
+          updateTimeline.push({
+            status: response.value?.status as UserStatus,
+            start_date: new Date()
+          })
+          return await instanceMongodb.users
+            .findOneAndUpdate(
+              { _id: new ObjectId(id), is_deleted: false },
+              { $set: { time_line: updateTimeline } },
+              { includeResultMetadata: true, returnDocument: 'after' }
+            )
+            .then((res) => User.toDto(res.value))
+        }
+      })
 
     return result
   }
 
-  async checkLoginValid(email: string, password: string) {
-    const user = await instanceMongodb.users.findOne({ email, password: hashPassword(password) })
+  async checkLoginValid(phone_number: string, password: string) {
+    const user = await instanceMongodb.users.findOne({
+      phone_number,
+      password_hash: hashPassword(password),
+      is_deleted: false
+    })
     return user
   }
 
