@@ -121,7 +121,10 @@ const userLoginValidSchema: ParamSchema = {
     options: async (value, { req }) => {
       const user = await usersServices.checkLoginValid(value, req.body.password)
       if (!user) {
-        throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
+        throw new ErrorWithStatus({
+          status: HTTP_STATUS.BAD_REQUEST,
+          message: USER_MESSAGES.PHONE_OR_PASSWORD_IS_INCORRECT
+        })
       }
       req.user = user
 
@@ -154,7 +157,12 @@ const userEmailExistSchema: ParamSchema = {
 export const loginValidator = validate(
   checkSchema(
     {
-      email: { ...userLoginValidSchema, ...userCorrectEmailSchema },
+      phone: {
+        ...userPhoneCorrectSchema,
+        ...userPhoneRequiredSchema,
+        ...userPhoneExistSchema,
+        ...userLoginValidSchema
+      },
       password: passwordSchema
     },
     ['body']

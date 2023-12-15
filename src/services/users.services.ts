@@ -145,9 +145,9 @@ class UsersService {
     return result
   }
 
-  async checkLoginValid(email: string, password: string) {
+  async checkLoginValid(phone_number: string, password: string) {
     const user = await instanceMongodb.users.findOne({
-      email,
+      phone_number,
       password_hash: hashPassword(password),
       is_deleted: false
     })
