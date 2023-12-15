@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Build-Images') {
             steps {
-                sh "docker build -t bixso-backend-devtest-internalapp-internalapp:${BUILD_NUMBER} ."
+                sh "docker build -t bixso-backend-devtest-internalapp:${BUILD_NUMBER} ."
             }
         }
         stage('SSH-Remote-Deploy'){
