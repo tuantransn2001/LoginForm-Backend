@@ -1,11 +1,11 @@
-FROM node:18.5
+FROM node:18.17
 
 WORKDIR /app
 
 COPY . .
 
 RUN npm install
-RUN npm install --force @img/sharp-linux-x64
+RUN npm install --force @img/sharp-linux-arm64
 
 RUN npm run build
 
