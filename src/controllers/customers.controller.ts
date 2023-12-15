@@ -54,10 +54,9 @@ export const deleteCustomerByIdController = async (
   req: Request<ParamsDictionary, any, any, DeleteCustomerByIdRequestQuery>,
   res: Response
 ) => {
-  const response = await customersServices.softDelete(req.query.id)
+  await customersServices.softDelete(req.query.id)
   return res.json({
-    message: USER_MESSAGES.DELETE_CUSTOMER_SUCCESS,
-    response
+    message: USER_MESSAGES.DELETE_CUSTOMER_SUCCESS
   })
 }
 
@@ -66,10 +65,10 @@ export const updateCustomerByIdController = async (
   res: Response
 ) => {
   const result = await customersServices.updateOne(req.body)
-
+  const response = Customer.toDto(result.value)
   return res.json({
     message: USER_MESSAGES.UPDATE_CUSTOMER_SUCCESS,
-    response: result
+    response
   })
 }
 

@@ -10,6 +10,7 @@ import USER_MESSAGES from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import usersServices from '~/services/users.services'
 import { UserDepartment, UserRole, UserStatus } from '~/constants/enums'
+import { routes_exclude_access_token } from '~/constants/common'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -178,7 +179,9 @@ export const accessTokenValidator = validate(
         trim: true,
         custom: {
           options: async (value: string, { req }) => {
-            const isException = req.originalUrl.split('/').find((path: string) => ['login', 'register'].includes(path))
+            const isException = req.originalUrl
+              .split('/')
+              .find((path: string) => routes_exclude_access_token.includes(path))
             if (isException) return true
 
             const access_token = (value || '').split(' ')[1]

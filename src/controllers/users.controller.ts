@@ -29,12 +29,11 @@ export const getAllUserController = async (
 }
 
 export const getMeController = async (req: Request, res: Response) => {
-  const current_user = await usersServices
-    .findUniq(new ObjectId(req.decoded_authorization?.user_id))
-    .then((response) => User.toDto(response))
+  const current_user = await usersServices.findUniq(new ObjectId(req.decoded_authorization?.user_id))
+  const response = User.toDto(current_user)
   return res.json({
     message: USER_MESSAGES.GET_ME_SUCCESS,
-    response: current_user
+    response
   })
 }
 

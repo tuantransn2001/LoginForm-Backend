@@ -12,7 +12,7 @@ class CustomersService {
         is_deleted: false
       })
       .skip(Number(_skip))
-      .limit(Number(_limit))
+      .limit(_limit)
       .toArray()
       .then((customers) => customers.map((customer) => Customer.toDto(customer)))
     return users
@@ -47,25 +47,22 @@ class CustomersService {
   }
 
   async softDelete(_id?: ObjectId) {
-    const result = await instanceMongodb.customers
-      .findOneAndUpdate(
-        { _id: new ObjectId(_id) },
-        { $set: { is_deleted: true } },
-        { includeResultMetadata: true, returnDocument: 'after' }
-      )
-      .then((response) => Customer.toDto(response.value))
+    const result = await instanceMongodb.customers.findOneAndUpdate(
+      { _id: new ObjectId(_id) },
+      { $set: { is_deleted: true } },
+      { includeResultMetadata: true, returnDocument: 'after' }
+    )
+
     return result
   }
 
   async updateOne(payload: UpdateCustomerRequestBody) {
     const { id, ...rest } = payload
-    const result = await instanceMongodb.customers
-      .findOneAndUpdate(
-        { _id: new ObjectId(id) },
-        { $set: { ...rest } },
-        { includeResultMetadata: true, returnDocument: 'after' }
-      )
-      .then((response) => Customer.toDto(response.value))
+    const result = await instanceMongodb.customers.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { ...rest } },
+      { includeResultMetadata: true, returnDocument: 'after' }
+    )
 
     return result
   }

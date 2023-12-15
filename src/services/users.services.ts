@@ -132,7 +132,7 @@ class UsersService {
             status: response.value?.status as UserStatus,
             start_date: new Date()
           })
-          await instanceMongodb.users
+          return await instanceMongodb.users
             .findOneAndUpdate(
               { _id: new ObjectId(id), is_deleted: false },
               { $set: { time_line: updateTimeline } },
