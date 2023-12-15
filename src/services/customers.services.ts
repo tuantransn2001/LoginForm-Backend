@@ -12,7 +12,7 @@ class CustomersService {
         is_deleted: false
       })
       .skip(Number(_skip))
-      .limit(_limit)
+      .limit(Number(_limit))
       .toArray()
       .then((customers) => customers.map((customer) => Customer.toDto(customer)))
     return users
