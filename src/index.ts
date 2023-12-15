@@ -7,7 +7,7 @@ import { accessTokenValidator } from './middlewares/users.middleware'
 instanceMongodb.connect().catch(console.dir)
 
 const app = express()
-const port = 8002
+const port = process.env.PORT || 8002
 
 app.use(express.json())
 
