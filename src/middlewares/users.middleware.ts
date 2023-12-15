@@ -157,7 +157,7 @@ const userEmailExistSchema: ParamSchema = {
 export const loginValidator = validate(
   checkSchema(
     {
-      phone: {
+      phone_number: {
         ...userPhoneCorrectSchema,
         ...userPhoneRequiredSchema,
         ...userPhoneExistSchema,
