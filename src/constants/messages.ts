@@ -7,6 +7,7 @@ export const USER_MESSAGES = {
   EMAIL_IS_REQUIRED: 'Email is required',
   EMAIL_IS_INVALID: 'Email is invalid',
   EMAIL_OR_PASSWORD_IS_INCORRECT: 'Email or password is incorrect',
+  PHONE_OR_PASSWORD_IS_INCORRECT: 'Phone or password is incorrect',
   USER_ID_REQUIRED: 'User id is required',
   USER_NOT_FOUND: 'User not found',
   PHONE_NUMBER_IS_REQUIRED: 'Phone number is required',
@@ -50,7 +51,18 @@ export const USER_MESSAGES = {
   FORGOT_PASSWORD_TOKEN_IS_INVALID: 'Forgot password token is invalid',
   RESET_PASSWORD_SUCCESS: 'Reset password success',
   GET_ME_SUCCESS: 'Get profile success',
-  UPLOAD_AVATAR_SUCCESS: 'Upload avatar success'
+  UPLOAD_AVATAR_SUCCESS: 'Upload avatar success',
+  CREATE_CUSTOMER_SUCCESS: 'Create customer success',
+  COMPANY_NAME_IS_REQUIRED: 'Company name is required',
+  GET_CUSTOMER_SUCCESS: 'Get customer success',
+  GET_ALL_CUSTOMER_SUCCESS: 'Get all customer success',
+  GET_ALL_USERS_SUCCESS: 'Get all users success',
+  DELETE_CUSTOMER_SUCCESS: 'Delete customer success',
+  UPDATE_CUSTOMER_SUCCESS: 'Update customer success',
+  PLEASE_UPLOAD_AT_LEAST_ONE_FILE: 'Please upload at least one file',
+  PLEASE_UPLOAD_ONLY_IMAGE_FILES: 'Please upload only image files',
+  OFFSET_MUST_BE_A_NUMBER: 'Offset must be a number',
+  LIMIT_MUST_BE_A_NUMBER: 'Limit must be a number'
 } as const
 
 export default USER_MESSAGES

@@ -9,7 +9,8 @@ import HTTP_STATUS from '~/constants/httpStatus'
 import USER_MESSAGES from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
 import usersServices from '~/services/users.services'
-import { UserStatus } from '~/constants/enums'
+import { UserDepartment, UserRole, UserStatus } from '~/constants/enums'
+import { routes_exclude_access_token } from '~/constants/common'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -120,7 +121,10 @@ const userLoginValidSchema: ParamSchema = {
     options: async (value, { req }) => {
       const user = await usersServices.checkLoginValid(value, req.body.password)
       if (!user) {
-        throw new Error(USER_MESSAGES.EMAIL_OR_PASSWORD_IS_INCORRECT)
+        throw new ErrorWithStatus({
+          status: HTTP_STATUS.BAD_REQUEST,
+          message: USER_MESSAGES.PHONE_OR_PASSWORD_IS_INCORRECT
+        })
       }
       req.user = user
 
@@ -140,7 +144,7 @@ const userEmailExistSchema: ParamSchema = {
   custom: {
     options: async (value, { req }) => {
       const user = await usersServices.checkEmailExist(req.body.email)
-      if (!user) {
+      if (user) {
         throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTS)
       }
       req.user = user
@@ -153,7 +157,12 @@ const userEmailExistSchema: ParamSchema = {
 export const loginValidator = validate(
   checkSchema(
     {
-      email: { ...userLoginValidSchema, ...userCorrectEmailSchema },
+      phone_number: {
+        ...userPhoneCorrectSchema,
+        ...userPhoneRequiredSchema,
+        ...userPhoneExistSchema,
+        ...userLoginValidSchema
+      },
       password: passwordSchema
     },
     ['body']
@@ -178,7 +187,13 @@ export const accessTokenValidator = validate(
         trim: true,
         custom: {
           options: async (value: string, { req }) => {
+            const isException = req.originalUrl
+              .split('/')
+              .find((path: string) => routes_exclude_access_token.includes(path))
+            if (isException) return true
+
             const access_token = (value || '').split(' ')[1]
+
             if (!access_token) {
               throw new ErrorWithStatus({
                 status: HTTP_STATUS.UNAUTHORIZED,
@@ -191,6 +206,7 @@ export const accessTokenValidator = validate(
                 token: access_token,
                 secretOrPublicKey: process.env.JWT_SECRET_ACCESS_TOKEN as string
               })
+
               ;(req as Request).decoded_authorization = decoded_authorization
             } catch (error) {
               throw new ErrorWithStatus({
@@ -285,12 +301,62 @@ export const updateUserByIdValidator = validate(
       },
       phone_number: { optional: true, ...userPhoneCorrectSchema, ...userPhoneExistSchema },
       status: {
-        isIn: { options: [Object.values(UserStatus)] },
-        errorMessage: 'Invalid status' + ' ' + 'status must: ' + Object.values(UserStatus)
+        optional: true,
+        isIn: { options: [Object.keys(UserStatus)] },
+        errorMessage: 'Invalid status' + ' ' + 'status must be: ' + Object.keys(UserStatus)
+      },
+      role: {
+        optional: true,
+        isIn: { options: [Object.keys(UserRole)] },
+        errorMessage: 'Invalid role' + ' ' + 'role must be: ' + Object.keys(UserRole)
+      },
+      department: {
+        optional: true,
+        isIn: { options: [Object.keys(UserDepartment)] },
+        errorMessage: 'Invalid department' + ' ' + 'department must be: ' + Object.keys(UserDepartment)
       }
     },
     ['body']
   )
 )
 
-export const uploadUserAvatarValidator = validate(checkSchema({ id: userNotFoundSchema }, ['query']))
+export const userUploadExistValidator = validate(checkSchema({ id: userNotFoundSchema }, ['query']))
+
+export const userUploadSingleFileExistValidator = validate(
+  checkSchema(
+    {
+      file: {
+        custom: {
+          options: async (_, { req }) => {
+            if (!req.file) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.BAD_REQUEST,
+                message: USER_MESSAGES.PLEASE_UPLOAD_AT_LEAST_ONE_FILE
+              })
+            }
+
+            if (!req.file.mimetype.startsWith('image/')) {
+              throw new ErrorWithStatus({
+                status: HTTP_STATUS.BAD_REQUEST,
+                message: USER_MESSAGES.PLEASE_UPLOAD_ONLY_IMAGE_FILES
+              })
+            }
+
+            return true
+          }
+        }
+      }
+    },
+    ['body']
+  )
+)
+
+export const getAllUserValidator = validate(
+  checkSchema(
+    {
+      offset: { optional: true, isNumeric: true, errorMessage: USER_MESSAGES.OFFSET_MUST_BE_A_NUMBER },
+      limit: { optional: true, isNumeric: true, errorMessage: USER_MESSAGES.LIMIT_MUST_BE_A_NUMBER }
+    },
+    ['query']
+  )
+)

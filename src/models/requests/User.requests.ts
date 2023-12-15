@@ -7,7 +7,7 @@ export interface RegisterRequestBody {
   name: string
   password: string
   confirm_password: string
-  date_of_birth: string
+  date_of_birth: Date
   phone_number: string
 }
 
@@ -25,6 +25,11 @@ export interface TokenPayload extends JwtPayload {
   token_type: TokenType
 }
 
+export interface GetAllUserRequestQuery {
+  offset?: number
+  limit?: number
+}
+
 export interface GetUserByIdRequestQuery {
   id?: ObjectId
 }
@@ -32,7 +37,9 @@ export interface GetUserByIdRequestQuery {
 export interface DeleteUserByIdRequestQuery extends GetUserByIdRequestQuery {}
 
 export interface UpdateUserRequestBody
-  extends Partial<Omit<UserType, '_id' | 'password_hash' | 'email_verify_token' | 'forgot_password_token' | 'verify'>> {
+  extends Partial<
+    Omit<UserType, '_id' | 'password_hash' | 'email_verify_token' | 'forgot_password_token' | 'verify' | 'updated_at'>
+  > {
   id: ObjectId
 }
 

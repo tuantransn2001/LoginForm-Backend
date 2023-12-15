@@ -2,6 +2,7 @@ import express from 'express'
 import rootRouter from './routes/root.routes'
 import instanceMongodb from '~/services/database.services'
 import { defaultErrorHandler } from './middlewares/error.middleware'
+import { accessTokenValidator } from './middlewares/users.middleware'
 
 instanceMongodb.connect().catch(console.dir)
 
@@ -10,7 +11,7 @@ const port = 8002
 
 app.use(express.json())
 
-app.use('/api', rootRouter)
+app.use('/api', accessTokenValidator, rootRouter)
 
 app.use(defaultErrorHandler)
 
