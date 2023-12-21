@@ -3,10 +3,11 @@ import { Collection, Db, MongoClient } from 'mongodb'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
 
 import User from '~/models/schemas/User.schema'
-
+import Customer from '~/models/schemas/Customer.schema'
 config()
 
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.ffdweqe.mongodb.net/?retryWrites=true&w=majority`
+// const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.ffdweqe.mongodb.net/?retryWrites=true&w=majority`
+const uri = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}`
 
 class Database {
   private client: MongoClient
@@ -38,6 +39,10 @@ class Database {
 
   get users(): Collection<User> {
     return this.db.collection(process.env.DB_USER_COLLECTION as string)
+  }
+
+  get customers(): Collection<Customer> {
+    return this.db.collection(process.env.DB_CUSTOMER_COLLECTION as string)
   }
 
   get refreshToken(): Collection<RefreshToken> {
