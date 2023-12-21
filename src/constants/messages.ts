@@ -62,7 +62,8 @@ export const USER_MESSAGES = {
   PLEASE_UPLOAD_AT_LEAST_ONE_FILE: 'Please upload at least one file',
   PLEASE_UPLOAD_ONLY_IMAGE_FILES: 'Please upload only image files',
   OFFSET_MUST_BE_A_NUMBER: 'Offset must be a number',
-  LIMIT_MUST_BE_A_NUMBER: 'Limit must be a number'
+  LIMIT_MUST_BE_A_NUMBER: 'Limit must be a number',
+  REFRESH_TOKEN_SUCCESS: 'Refresh token success'
 } as const
 
 export default USER_MESSAGES
