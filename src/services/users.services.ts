@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 import { ObjectId } from 'mongodb'
 
-import { signToken, verifyToken } from '~/utils/jwt'
+import { signToken } from '~/utils/jwt'
 import { hashPassword } from '~/utils/crypto'
 import { TokenType, UserStatus } from '~/constants/enums'
 
