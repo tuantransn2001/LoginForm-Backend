@@ -37,6 +37,18 @@ export const getMeController = async (req: Request, res: Response) => {
   })
 }
 
+export const refreshTokenController = async (req: Request, res: Response) => {
+  const response = await usersServices.refreshToken(
+    req.decoded_refresh_token?.user_id as string,
+    req.body.refresh_token
+  )
+
+  return res.json({
+    message: USER_MESSAGES.REFRESH_TOKEN_SUCCESS,
+    response
+  })
+}
+
 export const loginController = async (req: Request<ParamsDictionary, any, LoginRequestBody>, res: Response) => {
   const user = req.user as User
   const user_id = user._id as ObjectId

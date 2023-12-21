@@ -71,6 +71,18 @@ class UsersService {
     return { access_token, refresh_token }
   }
 
+  async refreshToken(user_id: string, refresh_token: string) {
+    const [access_token, new_refresh_token] = await this.signAccessAndRefreshToken(user_id)
+
+    await instanceMongodb.refreshToken.findOneAndUpdate(
+      { token: refresh_token, user_id: new ObjectId(user_id) },
+      { $set: { token: new_refresh_token } },
+      { includeResultMetadata: true, returnDocument: 'after' }
+    )
+
+    return { access_token, refresh_token: new_refresh_token }
+  }
+
   async checkEmailExist(email: string) {
     const user = await instanceMongodb.users.findOne({ email, is_deleted: false })
     return user

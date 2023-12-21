@@ -8,7 +8,8 @@ import {
   updateUserByIdController,
   uploadUserAvatarController,
   getMeController,
-  getAllUserController
+  getAllUserController,
+  refreshTokenController
 } from '~/controllers/users.controller'
 import { uploadSingleImageMiddleware } from '~/middlewares/upload.middleware'
 import {
@@ -19,7 +20,8 @@ import {
   updateUserByIdValidator,
   userUploadSingleFileExistValidator,
   userUploadExistValidator,
-  getAllUserValidator
+  getAllUserValidator,
+  refreshTokenValidator
 } from '~/middlewares/users.middleware'
 import { wrapRequestHandler } from '~/utils/handlers'
 
@@ -46,6 +48,13 @@ usersRouter.post('/login', loginValidator, wrapRequestHandler(loginController))
  * @access public
  */
 usersRouter.post('/register', registerValidator, wrapRequestHandler(registerController))
+/**
+ * @route POST /api/users/refresh
+ * @description refresh token
+ * @headers { Authorization: {{token}} }
+ * @access public
+ */
+usersRouter.post('/refresh-token', refreshTokenValidator, wrapRequestHandler(refreshTokenController))
 // ? ---------------------- Employee ----------------------
 /**
  * @route GET /api/users
