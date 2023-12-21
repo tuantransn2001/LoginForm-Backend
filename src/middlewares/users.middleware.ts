@@ -252,7 +252,7 @@ export const refreshTokenValidator = validate(
               }
 
               ;(req as Request).decoded_refresh_token = decoded_refresh_token
-            } catch (error) {
+            } catch (error: any) {
               if (error instanceof JsonWebTokenError) {
                 throw new ErrorWithStatus({
                   status: HTTP_STATUS.UNAUTHORIZED,

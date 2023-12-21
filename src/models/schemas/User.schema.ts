@@ -25,6 +25,7 @@ export interface UserType {
   contract_type?: string
   health_insurance?: boolean
   social_insurance?: boolean
+  basic_salary?: string
   support?: boolean
   is_deleted?: boolean
   created_at?: Date
@@ -51,6 +52,7 @@ export default class User {
   forgot_password_token?: string
   verify?: UserVerifyStatus
   department?: UserDepartment | null
+  basic_salary?: string
   contract?: string
   contract_type?: string
   health_insurance?: boolean
@@ -81,6 +83,7 @@ export default class User {
     this.forgot_password_token = user.forgot_password_token || ''
     this.verify = user.verify || UserVerifyStatus.Unverified
     this.department = user.department
+    this.basic_salary = user.basic_salary || ''
     this.contract = user.contract || ''
     this.contract_type = user.contract_type || ''
     this.health_insurance = user.health_insurance || false
@@ -97,7 +100,7 @@ export default class User {
     return {
       id: user._id,
       name: user.name,
-      gender: user.gender === null ? null : user.gender ? 'Nam' : 'Nữ',
+      gender: user.gender,
       date_of_birth: user.date_of_birth,
       address: user.address,
       phone_number: user.phone_number,
@@ -110,6 +113,7 @@ export default class User {
       department: user.department,
       contract: user.contract,
       contract_type: user.contract_type,
+      basic_salary: user.basic_salary,
       health_insurance: user.health_insurance,
       social_insurance: user.social_insurance,
       support: user.support,
