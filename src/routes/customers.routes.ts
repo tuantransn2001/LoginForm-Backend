@@ -77,7 +77,7 @@ customersRouter.post(
         maxCount: 1
       }
     ],
-    ['.png']
+    ['.png', '.jpeg']
   ),
   customerUploadMultipleFileValidator,
   wrapRequestHandler(uploadCustomerImagesController)

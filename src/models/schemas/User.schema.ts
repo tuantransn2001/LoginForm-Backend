@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
 import { UserDepartment, UserRole, UserStatus, UserVerifyStatus } from '~/constants/enums'
-
+import S3Service from '~/libs/aws/s3'
 export interface UserType {
   _id?: ObjectId
   name?: string
@@ -13,8 +13,8 @@ export interface UserType {
   birth_place?: string
   educational_background?: string
   role?: UserRole
-  time_line?: { status: UserStatus; start_date: Date }[]
-  avatar_url?: string
+  timeline?: { status: UserStatus; start_date: Date }[]
+  avatar_uniq_key?: string
   status?: UserStatus | null
   password_hash?: string
   email_verify_token?: string
@@ -44,8 +44,8 @@ export default class User {
   birth_place?: string
   educational_background?: string
   role?: UserRole
-  time_line?: { status: UserStatus; start_date: Date }[]
-  avatar_url?: string
+  timeline?: { status: UserStatus; start_date: Date }[]
+  avatar_uniq_key?: string
   status?: UserStatus | null
   password_hash?: string
   email_verify_token?: string
@@ -76,8 +76,8 @@ export default class User {
     this.birth_place = user.birth_place || ''
     this.educational_background = user.educational_background || ''
     this.role = user.role
-    this.time_line = user.time_line || []
-    this.avatar_url = user.avatar_url || ''
+    this.timeline = user.timeline || []
+    this.avatar_uniq_key = user.avatar_uniq_key || ''
     this.password_hash = user.password_hash || ''
     this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
@@ -95,8 +95,9 @@ export default class User {
     this.updated_at = user.updated_at || date
   }
 
-  static toDto(user?: UserType | null): UserType | object {
+  static async toDto(user?: UserType | null): Promise<UserType | object> {
     if (!user) return {}
+    const { signedUrl } = await S3Service.getSignUrlForFile(user?.avatar_uniq_key)
     return {
       id: user._id,
       name: user.name,
@@ -107,7 +108,7 @@ export default class User {
       email: user.email,
       citizen_identification: user.citizen_identification,
       role: user.role,
-      avatar_url: user.avatar_url,
+      avatar_url: signedUrl,
       birth_place: user.birth_place,
       educational_background: user.educational_background,
       department: user.department,
@@ -118,7 +119,7 @@ export default class User {
       social_insurance: user.social_insurance,
       support: user.support,
       status: user.status,
-      time_line: user.time_line
+      timeline: user.timeline
     }
   }
 }
