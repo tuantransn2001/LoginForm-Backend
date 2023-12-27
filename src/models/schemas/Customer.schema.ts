@@ -3,7 +3,7 @@ import { CustomerStatus, CustomerTitle } from '~/constants/enums'
 
 export interface CustomerType {
   _id?: ObjectId
-  avatar_url?: string
+  avatar_uniq_key?: string
   company_logo?: string
   title?: CustomerTitle | null
   status?: CustomerStatus | null
@@ -22,7 +22,7 @@ export interface CustomerType {
 
 export default class Customer {
   _id?: ObjectId
-  avatar_url?: string
+  avatar_uniq_key?: string
   company_logo?: string
   title?: CustomerTitle | null
   status?: CustomerStatus | null
@@ -42,7 +42,7 @@ export default class Customer {
     const date = new Date()
 
     this._id = customer._id
-    this.avatar_url = customer.avatar_url || ''
+    this.avatar_uniq_key = customer.avatar_uniq_key || ''
     this.company_logo = customer.company_logo || ''
     this.title = customer.title
     this.name = customer.name || ''
@@ -63,7 +63,7 @@ export default class Customer {
     if (!customer) return {}
     return {
       _id: customer._id,
-      avatar_url: customer.avatar_url,
+      avatar_uniq_key: customer.avatar_uniq_key,
       company_logo: customer.company_logo,
       title: customer.title,
       status: customer.status,

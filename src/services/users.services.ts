@@ -103,7 +103,7 @@ class UsersService {
       .skip(Number(_skip))
       .limit(Number(_limit))
       .toArray()
-      .then((users) => users.map((user) => User.toDto(user)))
+      .then(async (users) => await Promise.all(users.map((user) => User.toDto(user))))
     return users
   }
 
@@ -130,27 +130,28 @@ class UsersService {
 
   async updateOne(payload: UpdateUserRequestBody) {
     const { id, ...rest } = payload
+    const now = new Date()
 
     const result = await instanceMongodb.users
       .findOneAndUpdate(
-        { _id: new ObjectId(id), is_deleted: false },
-        { $set: { ...rest } },
+        { _id: new ObjectId(id) },
+        { $set: { ...rest, updated_at: now } },
         { includeResultMetadata: true, returnDocument: 'after' }
       )
       .then(async (response) => {
         if (Object.prototype.hasOwnProperty.call(payload, 'status')) {
-          const updateTimeline: { status: UserStatus; start_date: Date }[] = response.value?.time_line || []
+          const updateTimeline: { status: UserStatus; start_date: Date }[] = response.value?.timeline || []
           updateTimeline.push({
             status: response.value?.status as UserStatus,
             start_date: new Date()
           })
           return await instanceMongodb.users
             .findOneAndUpdate(
-              { _id: new ObjectId(id), is_deleted: false },
-              { $set: { time_line: updateTimeline } },
+              { _id: new ObjectId(id) },
+              { $set: { timeline: updateTimeline } },
               { includeResultMetadata: true, returnDocument: 'after' }
             )
-            .then((res) => User.toDto(res.value))
+            .then(async (res) => await User.toDto(res.value))
         }
       })
 
