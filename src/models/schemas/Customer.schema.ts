@@ -1,11 +1,12 @@
 import { ObjectId } from 'mongodb'
-import { CustomerTitle } from '~/constants/enums'
+import { CustomerStatus, CustomerTitle } from '~/constants/enums'
 
 export interface CustomerType {
   _id?: ObjectId
-  avatar_url?: string
+  avatar_uniq_key?: string
   company_logo?: string
   title?: CustomerTitle | null
+  status?: CustomerStatus | null
   name?: string
   role?: string
   phone_number?: string
@@ -21,9 +22,10 @@ export interface CustomerType {
 
 export default class Customer {
   _id?: ObjectId
-  avatar_url?: string
+  avatar_uniq_key?: string
   company_logo?: string
   title?: CustomerTitle | null
+  status?: CustomerStatus | null
   name?: string
   role?: string
   phone_number?: string
@@ -40,7 +42,7 @@ export default class Customer {
     const date = new Date()
 
     this._id = customer._id
-    this.avatar_url = customer.avatar_url || ''
+    this.avatar_uniq_key = customer.avatar_uniq_key || ''
     this.company_logo = customer.company_logo || ''
     this.title = customer.title
     this.name = customer.name || ''
@@ -51,6 +53,7 @@ export default class Customer {
     this.company_address = customer.company_address || ''
     this.company_description = customer.company_description || ''
     this.company_model = customer.company_model || ''
+    this.status = customer.status || CustomerStatus.Active
     this.is_deleted = customer.is_deleted || false
     this.created_at = customer.created_at || date
     this.updated_at = customer.updated_at || date
@@ -60,9 +63,10 @@ export default class Customer {
     if (!customer) return {}
     return {
       _id: customer._id,
-      avatar_url: customer.avatar_url,
+      avatar_uniq_key: customer.avatar_uniq_key,
       company_logo: customer.company_logo,
       title: customer.title,
+      status: customer.status,
       name: customer.name,
       role: customer.role,
       phone_number: customer.phone_number,

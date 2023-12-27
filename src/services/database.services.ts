@@ -33,7 +33,6 @@ class Database {
 
   static getInstance() {
     Database._instance = Database._instance || new Database()
-
     return Database._instance
   }
 

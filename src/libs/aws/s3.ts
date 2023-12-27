@@ -25,6 +25,7 @@ class AWSS3 {
   }
 
   getSignUrlForFile(uniqKey?: string): Promise<{ signedUrl: string; fileName: string }> {
+    if (uniqKey === '') return { signedUrl: '', fileName: '' }
     return new Promise((resolve, reject) => {
       try {
         const fileName = path.basename(uniqKey)

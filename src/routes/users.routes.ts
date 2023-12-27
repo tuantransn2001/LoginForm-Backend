@@ -17,11 +17,12 @@ import {
   getUserByIdValidator,
   loginValidator,
   registerValidator,
-  updateUserByIdValidator,
+  updatePartitionUserByIdValidator,
   userUploadSingleFileExistValidator,
   userUploadExistValidator,
   getAllUserValidator,
-  refreshTokenValidator
+  refreshTokenValidator,
+  updateGlobalUserByIdValidator
 } from '~/middlewares/users.middleware'
 import { wrapRequestHandler } from '~/utils/handlers'
 
@@ -76,7 +77,14 @@ usersRouter.get('/get-by-id', getUserByIdValidator, wrapRequestHandler(getUserBy
  * @body { extends user type }
  * @access public
  */
-usersRouter.patch('/', updateUserByIdValidator, wrapRequestHandler(updateUserByIdController))
+usersRouter.patch('/', updatePartitionUserByIdValidator, wrapRequestHandler(updateUserByIdController))
+/**
+ * @route PUTß /api/users
+ * @description update user detail
+ * @body { extends user type }
+ * @access public
+ */
+usersRouter.put('/', updateGlobalUserByIdValidator, wrapRequestHandler(updateUserByIdController))
 /**
  * @route POST /api/users/avatar?id=657181a46f8993d5fee59fbb
  * @description upload user avatar
@@ -87,7 +95,7 @@ usersRouter.patch('/', updateUserByIdValidator, wrapRequestHandler(updateUserByI
 usersRouter.post(
   '/avatar',
   userUploadExistValidator,
-  uploadSingleImageMiddleware('avatar', ['.png']),
+  uploadSingleImageMiddleware('avatar', ['.png', '.jpeg']),
   userUploadSingleFileExistValidator,
   wrapRequestHandler(uploadUserAvatarController)
 )
