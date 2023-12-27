@@ -16,6 +16,12 @@ export enum CustomerTitle {
   Mrs = 'Bà'
 }
 
+export enum CustomerStatus {
+  Active = 'Hoạt động',
+  Pending = 'Chờ xử lý',
+  Cancel = 'Đã hủy'
+}
+
 export enum UserDepartment {
   Technology = 'Phòng công nghệ',
   Sale = 'Phòng kinh doanh',
