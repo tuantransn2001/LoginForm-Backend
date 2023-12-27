@@ -11,11 +11,7 @@ const port = process.env.PORT || 8002
 
 app.use(express.json())
 
-app.use(
-  '/api',
-  // accessTokenValidator
-  rootRouter
-)
+app.use('/api', accessTokenValidator, rootRouter)
 
 app.use(defaultErrorHandler)
 
