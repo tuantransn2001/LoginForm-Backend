@@ -1,5 +1,5 @@
 import { ParamSchema, checkSchema } from 'express-validator'
-import { CustomerTitle } from '~/constants/enums'
+import { CustomerStatus, CustomerTitle } from '~/constants/enums'
 import HTTP_STATUS from '~/constants/httpStatus'
 import USER_MESSAGES from '~/constants/messages'
 import { ErrorWithStatus } from '~/models/Errors'
@@ -127,6 +127,10 @@ export const updateCustomerByIdValidator = validate(
       title: {
         isIn: { options: [Object.keys(CustomerTitle)] },
         errorMessage: 'Invalid title' + ' ' + 'title must: ' + Object.keys(CustomerTitle)
+      },
+      status: {
+        isIn: { options: [Object.keys(CustomerStatus)] },
+        errorMessage: 'Invalid status' + ' ' + 'title must: ' + Object.keys(CustomerStatus)
       }
     },
     ['body']
