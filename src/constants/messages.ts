@@ -63,7 +63,12 @@ export const USER_MESSAGES = {
   PLEASE_UPLOAD_ONLY_IMAGE_FILES: 'Please upload only image files',
   OFFSET_MUST_BE_A_NUMBER: 'Offset must be a number',
   LIMIT_MUST_BE_A_NUMBER: 'Limit must be a number',
-  REFRESH_TOKEN_SUCCESS: 'Refresh token success'
+  REFRESH_TOKEN_SUCCESS: 'Refresh token success',
+  CITIZEN_IDENTIFICATION_IS_REQUIRED: 'Citizen identification is required',
+  BIRTH_PLACE_IS_REQUIRED: 'Birth place is required',
+  EDUCATIONAL_BACKGROUND_IS_REQUIRED: 'Educational background is required',
+  CONTRACT_IS_REQUIRED: 'Contract is required',
+  CONTRACT_TYPE_IS_REQUIRED: 'Contract type is required'
 } as const
 
 export default USER_MESSAGES

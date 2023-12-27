@@ -88,7 +88,7 @@ export const uploadCustomerImagesController = async (
       resize: { width: 490, height: 510 }
     })
     const { signedUrl } = await S3Service.getSignUrlForFile(uniqFileName)
-    if (file.fieldname === 'avatar') updateData['avatar_url'] = signedUrl
+    if (file.fieldname === 'avatar') updateData['avatar_uniq_key'] = signedUrl
     if (file.fieldname === 'logo') updateData['company_logo'] = signedUrl
 
     await customersServices.updateOne(updateData)

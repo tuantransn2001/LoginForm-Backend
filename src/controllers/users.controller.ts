@@ -30,7 +30,7 @@ export const getAllUserController = async (
 
 export const getMeController = async (req: Request, res: Response) => {
   const current_user = await usersServices.findUniq(new ObjectId(req.decoded_authorization?.user_id))
-  const response = User.toDto(current_user)
+  const response = await User.toDto(current_user)
   return res.json({
     message: USER_MESSAGES.GET_ME_SUCCESS,
     response
@@ -72,7 +72,7 @@ export const getUserByIdController = async (
   res: Response
 ) => {
   const result = await usersServices.findUniq(req.query.id)
-  const response = User.toDto(result)
+  const response = await User.toDto(result)
 
   return res.json({
     message: USER_MESSAGES.GET_ME_SUCCESS,
@@ -111,10 +111,8 @@ export const uploadUserAvatarController = async (
   await S3Service.upload(req.file?.path as string, uniqFileName, {
     resize: { width: 490, height: 510 }
   })
-  const { signedUrl } = await S3Service.getSignUrlForFile(uniqFileName)
 
-  const updatedUser = await usersServices.updateOne({ id: new ObjectId(req.query.id), avatar_url: signedUrl })
-
+  const updatedUser = await usersServices.updateOne({ id: new ObjectId(req.query.id), avatar_uniq_key: uniqFileName })
   return res.json({
     mess: USER_MESSAGES.UPLOAD_AVATAR_SUCCESS,
     response: updatedUser

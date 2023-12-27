@@ -11,6 +11,7 @@ import { ErrorWithStatus } from '~/models/Errors'
 import usersServices from '~/services/users.services'
 import { UserDepartment, UserRole, UserStatus } from '~/constants/enums'
 import { routes_exclude_access_token } from '~/constants/common'
+import { ObjectId } from 'mongodb'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
@@ -92,9 +93,10 @@ const userNotFoundSchema: ParamSchema = {
 
 const userPhoneExistSchema: ParamSchema = {
   custom: {
-    options: async (value) => {
-      const isExistPhoneNumber = await usersServices.checkPhoneNumberExist(value)
-      if (isExistPhoneNumber) {
+    options: async (value, { req }) => {
+      const user = await usersServices.checkPhoneNumberExist(value)
+      const isSameUser = user && user._id.toString() === req.body.id
+      if (user && !isSameUser) {
         throw new Error(USER_MESSAGES.PHONE_NUMBER_ALREADY_EXISTS)
       }
       return true
@@ -144,7 +146,9 @@ const userEmailExistSchema: ParamSchema = {
   custom: {
     options: async (value, { req }) => {
       const user = await usersServices.checkEmailExist(req.body.email)
-      if (user) {
+      const isSameUser = user && user._id.toString() === req.body.id
+
+      if (user && !isSameUser) {
         throw new Error(USER_MESSAGES.EMAIL_ALREADY_EXISTS)
       }
       req.user = user
@@ -290,7 +294,47 @@ export const deleteByIdValidator = validate(
   )
 )
 
-export const updateUserByIdValidator = validate(
+export const updateGlobalUserByIdValidator = validate(
+  checkSchema(
+    {
+      id: userNotFoundSchema,
+      email: {
+        ...userCorrectEmailSchema,
+        ...userEmailExistSchema
+      },
+      phone_number: { ...userPhoneCorrectSchema, ...userPhoneExistSchema },
+      status: {
+        isIn: { options: [Object.keys(UserStatus)] },
+        errorMessage: 'Invalid status' + ' ' + 'status must be: ' + Object.keys(UserStatus)
+      },
+      role: {
+        isIn: { options: [Object.keys(UserRole)] },
+        errorMessage: 'Invalid role' + ' ' + 'role must be: ' + Object.keys(UserRole)
+      },
+      department: {
+        isIn: { options: [Object.keys(UserDepartment)] },
+        errorMessage: 'Invalid department' + ' ' + 'department must be: ' + Object.keys(UserDepartment)
+      },
+      citizen_identification: {
+        isString: true,
+        errorMessage: USER_MESSAGES.CITIZEN_IDENTIFICATION_IS_REQUIRED
+      },
+      birth_place: {
+        isString: true,
+        errorMessage: USER_MESSAGES.BIRTH_PLACE_IS_REQUIRED
+      },
+      educational_background: { isString: true, errorMessage: USER_MESSAGES.EDUCATIONAL_BACKGROUND_IS_REQUIRED },
+      contract: {
+        isString: true,
+        errorMessage: USER_MESSAGES.CONTRACT_IS_REQUIRED
+      },
+      contract_type: { isString: true, errorMessage: USER_MESSAGES.CONTRACT_TYPE_IS_REQUIRED }
+    },
+    ['body']
+  )
+)
+
+export const updatePartitionUserByIdValidator = validate(
   checkSchema(
     {
       id: userNotFoundSchema,
@@ -316,6 +360,7 @@ export const updateUserByIdValidator = validate(
         errorMessage: 'Invalid department' + ' ' + 'department must be: ' + Object.keys(UserDepartment)
       }
     },
+
     ['body']
   )
 )
