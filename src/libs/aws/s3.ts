@@ -24,6 +24,31 @@ class AWSS3 {
     this.s3 = new AWS.S3(this.config)
   }
 
+  extractKeyFromPresignedUrl(presignedUrl: string): string | null {
+    const parsedUrl = new URL(presignedUrl)
+
+    const key = parsedUrl.pathname?.slice(1)
+
+    return key || null
+  }
+
+  checkUrlExpired(signedUrl?: string): Promise<boolean> {
+    if (signedUrl === '' || !signedUrl) return true
+    return new Promise((resolve, reject) => {
+      fetch(signedUrl)
+        .then((response) => {
+          if (response.status === 403) {
+            resolve(true)
+          } else {
+            resolve(false)
+          }
+        })
+        .catch((error) => {
+          reject('Error:', error.message)
+        })
+    })
+  }
+
   getSignUrlForFile(uniqKey?: string): Promise<{ signedUrl: string; fileName: string }> {
     if (uniqKey === '' || !uniqKey) return { signedUrl: '', fileName: '' }
     return new Promise((resolve, reject) => {
@@ -114,6 +139,20 @@ class AWSS3 {
         reject('File ' + filepath + ' does not exist')
       }
     })
+  }
+
+  async generateSignedUrlIncludeCheckExpire(presigned_url?: string): Promise<string> {
+    const isUrlExpired = await this.checkUrlExpired(presigned_url)
+    const uniq_key = this.extractKeyFromPresignedUrl(presigned_url)
+
+    const shouldUpdateUrl = isUrlExpired && uniq_key && uniq_key !== ''
+
+    if (shouldUpdateUrl) {
+      const { signedUrl } = await this.getSignUrlForFile(uniq_key)
+      return signedUrl
+    }
+
+    return presigned_url
   }
 }
 

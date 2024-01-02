@@ -14,7 +14,7 @@ export interface UserType {
   educational_background?: string
   role?: UserRole
   timeline?: { status: UserStatus; start_date: Date }[]
-  avatar_uniq_key?: string
+  avatar_url?: string
   status?: UserStatus | null
   password_hash?: string
   email_verify_token?: string
@@ -45,7 +45,7 @@ export default class User {
   educational_background?: string
   role?: UserRole
   timeline?: { status: UserStatus; start_date: Date }[]
-  avatar_uniq_key?: string
+  avatar_url?: string
   status?: UserStatus | null
   password_hash?: string
   email_verify_token?: string
@@ -77,7 +77,7 @@ export default class User {
     this.educational_background = user.educational_background || ''
     this.role = user.role
     this.timeline = user.timeline || []
-    this.avatar_uniq_key = user.avatar_uniq_key || ''
+    this.avatar_url = user.avatar_url || ''
     this.password_hash = user.password_hash || ''
     this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
@@ -97,7 +97,9 @@ export default class User {
 
   static async toDto(user?: UserType | null): Promise<UserType | object> {
     if (!user) return {}
-    const { signedUrl } = await S3Service.getSignUrlForFile(user?.avatar_uniq_key)
+
+    const new_avatar_url = await S3Service.generateSignedUrlIncludeCheckExpire(user.avatar_url)
+
     return {
       id: user._id,
       name: user.name,
@@ -108,7 +110,7 @@ export default class User {
       email: user.email,
       citizen_identification: user.citizen_identification,
       role: user.role,
-      avatar_url: signedUrl,
+      avatar_url: new_avatar_url,
       birth_place: user.birth_place,
       educational_background: user.educational_background,
       department: user.department,
