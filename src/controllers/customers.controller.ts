@@ -33,7 +33,7 @@ export const getCustomerByIdController = async (
   res: Response
 ) => {
   const result = await customersServices.findUniq(req.query.id)
-  const response = Customer.toDto(result)
+  const response = await Customer.toDto(result)
   return res.json({
     message: USER_MESSAGES.GET_CUSTOMER_SUCCESS,
     response
@@ -65,7 +65,7 @@ export const updateCustomerByIdController = async (
   res: Response
 ) => {
   const result = await customersServices.updateOne(req.body)
-  const response = Customer.toDto(result.value)
+  const response = await Customer.toDto(result.value)
   return res.json({
     message: USER_MESSAGES.UPDATE_CUSTOMER_SUCCESS,
     response
@@ -88,7 +88,7 @@ export const uploadCustomerImagesController = async (
       resize: { width: 490, height: 510 }
     })
     const { signedUrl } = await S3Service.getSignUrlForFile(uniqFileName)
-    if (file.fieldname === 'avatar') updateData['avatar_uniq_key'] = signedUrl
+    if (file.fieldname === 'avatar') updateData['avatar_url'] = signedUrl
     if (file.fieldname === 'logo') updateData['company_logo'] = signedUrl
 
     await customersServices.updateOne(updateData)

@@ -111,8 +111,13 @@ export const uploadUserAvatarController = async (
   await S3Service.upload(req.file?.path as string, uniqFileName, {
     resize: { width: 490, height: 510 }
   })
+  const { signedUrl } = await S3Service.getSignUrlForFile(uniqFileName)
 
-  const updatedUser = await usersServices.updateOne({ id: new ObjectId(req.query.id), avatar_uniq_key: uniqFileName })
+  const updatedUser = await usersServices.updateOne({
+    id: new ObjectId(req.query.id),
+    avatar_url: signedUrl
+  })
+
   return res.json({
     mess: USER_MESSAGES.UPLOAD_AVATAR_SUCCESS,
     response: updatedUser
