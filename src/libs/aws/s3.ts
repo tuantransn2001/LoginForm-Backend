@@ -142,6 +142,8 @@ class AWSS3 {
   }
 
   async generateSignedUrlIncludeCheckExpire(presigned_url?: string): Promise<string> {
+    if (!presigned_url || presigned_url.length === 0) return ''
+
     const isUrlExpired = await this.checkUrlExpired(presigned_url)
     const uniq_key = this.extractKeyFromPresignedUrl(presigned_url)
 
