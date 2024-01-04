@@ -104,6 +104,7 @@ class UsersService {
       .limit(Number(_limit))
       .toArray()
       .then(async (users) => await Promise.all(users.map((user) => User.toDto(user))))
+
     return users
   }
 
