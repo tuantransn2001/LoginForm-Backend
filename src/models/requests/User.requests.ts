@@ -30,11 +30,11 @@ export interface GetAllUserRequestQuery {
   limit?: number
 }
 
-export interface GetUserByIdRequestQuery {
+export interface GetUserByIdRequest {
   id?: ObjectId
 }
 
-export interface DeleteUserByIdRequestQuery extends GetUserByIdRequestQuery {}
+export interface DeleteUserByIdRequestQuery extends GetUserByIdRequest {}
 
 export interface UpdateUserRequestBody
   extends Partial<
@@ -43,4 +43,4 @@ export interface UpdateUserRequestBody
   id: ObjectId
 }
 
-export interface UploadUserAvatarRequestQuery extends GetUserByIdRequestQuery {}
+export interface UploadUserAvatarRequestQuery extends GetUserByIdRequest {}

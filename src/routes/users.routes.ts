@@ -70,7 +70,7 @@ usersRouter.get('/', getAllUserValidator, wrapRequestHandler(getAllUserControlle
  * @query { id }
  * @access public
  */
-usersRouter.get('/get-by-id', getUserByIdValidator, wrapRequestHandler(getUserByIdController))
+usersRouter.get('/get-by-id/:id', getUserByIdValidator, wrapRequestHandler(getUserByIdController))
 /**
  * @route PATCH /api/users
  * @description update user detail
@@ -79,7 +79,7 @@ usersRouter.get('/get-by-id', getUserByIdValidator, wrapRequestHandler(getUserBy
  */
 usersRouter.patch('/', updatePartitionUserByIdValidator, wrapRequestHandler(updateUserByIdController))
 /**
- * @route PUTß /api/users
+ * @route PUT /api/users
  * @description update user detail
  * @body { extends user type }
  * @access public

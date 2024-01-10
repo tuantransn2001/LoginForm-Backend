@@ -281,7 +281,7 @@ export const getUserByIdValidator = validate(
     {
       id: userNotFoundSchema
     },
-    ['query']
+    ['params']
   )
 )
 
