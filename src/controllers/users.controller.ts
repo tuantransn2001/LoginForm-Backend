@@ -7,7 +7,7 @@ import usersServices from '~/services/users.services'
 import {
   LoginRequestBody,
   RegisterRequestBody,
-  GetUserByIdRequestQuery,
+  GetUserByIdRequest,
   UpdateUserRequestBody,
   UploadUserAvatarRequestQuery,
   GetAllUserRequestQuery
@@ -67,11 +67,8 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
   })
 }
 
-export const getUserByIdController = async (
-  req: Request<ParamsDictionary, any, any, GetUserByIdRequestQuery>,
-  res: Response
-) => {
-  const result = await usersServices.findUniq(req.query.id)
+export const getUserByIdController = async (req: Request<GetUserByIdRequest, any, any>, res: Response) => {
+  const result = await usersServices.findUniq(req.params.id)
   const response = await User.toDto(result)
 
   return res.json({
@@ -92,7 +89,7 @@ export const updateUserByIdController = async (
 }
 
 export const deleteUserByIdController = async (
-  req: Request<ParamsDictionary, any, any, GetUserByIdRequestQuery>,
+  req: Request<ParamsDictionary, any, any, GetUserByIdRequest>,
   res: Response
 ) => {
   await usersServices.softDeleteOne(req.query.id)
