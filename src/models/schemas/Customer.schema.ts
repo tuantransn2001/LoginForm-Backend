@@ -1,9 +1,9 @@
 import { ObjectId } from 'mongodb'
 import { CustomerStatus, CustomerTitle } from '~/constants/enums'
-
+import S3Service from '~/libs/aws/s3'
 export interface CustomerType {
   _id?: ObjectId
-  avatar_uniq_key?: string
+  avatar_url?: string
   company_logo?: string
   title?: CustomerTitle | null
   status?: CustomerStatus | null
@@ -22,7 +22,7 @@ export interface CustomerType {
 
 export default class Customer {
   _id?: ObjectId
-  avatar_uniq_key?: string
+  avatar_url?: string
   company_logo?: string
   title?: CustomerTitle | null
   status?: CustomerStatus | null
@@ -42,7 +42,7 @@ export default class Customer {
     const date = new Date()
 
     this._id = customer._id
-    this.avatar_uniq_key = customer.avatar_uniq_key || ''
+    this.avatar_url = customer.avatar_url || ''
     this.company_logo = customer.company_logo || ''
     this.title = customer.title
     this.name = customer.name || ''
@@ -59,12 +59,16 @@ export default class Customer {
     this.updated_at = customer.updated_at || date
   }
 
-  static toDto(customer?: CustomerType | null): CustomerType | object {
+  static async toDto(customer?: CustomerType | null): Promise<CustomerType | object> {
     if (!customer) return {}
+
+    const new_avatar_url = await S3Service.generateSignedUrlIncludeCheckExpire(customer.avatar_url)
+    const new_company_logo = await S3Service.generateSignedUrlIncludeCheckExpire(customer.company_logo)
+
     return {
       _id: customer._id,
-      avatar_uniq_key: customer.avatar_uniq_key,
-      company_logo: customer.company_logo,
+      avatar_url: new_avatar_url,
+      company_logo: new_company_logo,
       title: customer.title,
       status: customer.status,
       name: customer.name,

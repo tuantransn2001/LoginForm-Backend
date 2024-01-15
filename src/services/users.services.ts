@@ -94,7 +94,8 @@ class UsersService {
   }
 
   async findAll({ offset, limit }: { offset?: number; limit?: number }) {
-    const _limit = limit ? limit : 10
+    const totalDocument = await instanceMongodb.users.countDocuments({ is_deleted: false })
+    const _limit = limit ? limit : totalDocument
     const _skip = offset ? (offset - 1) * _limit : 0
     const users = await instanceMongodb.users
       .find({
@@ -104,6 +105,7 @@ class UsersService {
       .limit(Number(_limit))
       .toArray()
       .then(async (users) => await Promise.all(users.map((user) => User.toDto(user))))
+
     return users
   }
 

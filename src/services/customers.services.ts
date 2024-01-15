@@ -7,15 +7,15 @@ class CustomersService {
   async findAll({ offset, limit }: { offset?: number; limit?: number }) {
     const _limit = limit ? limit : 10
     const _skip = offset ? (offset - 1) * _limit : 0
-    const users = await instanceMongodb.customers
+    const customers = await instanceMongodb.customers
       .find({
         is_deleted: false
       })
       .skip(Number(_skip))
       .limit(Number(_limit))
       .toArray()
-      .then((customers) => customers.map((customer) => Customer.toDto(customer)))
-    return users
+      .then(async (customers) => await Promise.all(customers.map((user) => Customer.toDto(user))))
+    return customers
   }
   async insertOne(payload: CustomerType) {
     const customer_id = new ObjectId()
@@ -32,18 +32,18 @@ class CustomersService {
     return result
   }
   async findUniq(_id?: ObjectId) {
-    const user = await instanceMongodb.customers.findOne({ _id: new ObjectId(_id), is_deleted: false })
-    return user
+    const customer = await instanceMongodb.customers.findOne({ _id: new ObjectId(_id), is_deleted: false })
+    return customer
   }
 
   async checkEmailExist(email: string) {
-    const user = await instanceMongodb.customers.findOne({ email, is_deleted: false })
-    return user
+    const customer = await instanceMongodb.customers.findOne({ email, is_deleted: false })
+    return customer
   }
 
   async checkPhoneNumberExist(phone_number: string) {
-    const user = await instanceMongodb.customers.findOne({ phone_number, is_deleted: false })
-    return user
+    const customer = await instanceMongodb.customers.findOne({ phone_number, is_deleted: false })
+    return customer
   }
 
   async softDelete(_id?: ObjectId) {
