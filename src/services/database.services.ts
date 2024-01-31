@@ -7,8 +7,8 @@ import Customer from '~/models/schemas/Customer.schema'
 
 config()
 
-// const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.ffdweqe.mongodb.net/?retryWrites=true&w=majority`
-const uri = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}`
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.ffdweqe.mongodb.net/?retryWrites=true&w=majority`
+// const uri = `mongodb://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}`
 
 class Database {
   private client: MongoClient
