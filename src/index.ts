@@ -8,7 +8,10 @@ import { accessTokenValidator } from './middlewares/users.middleware'
 instanceMongodb.connect().catch(console.dir)
 
 const app = express()
-const port = process.env.PORT || 8002
+const port = process.env.PORT || 4000
+const node_env = process.env.NODE_ENV || 'development'
+const rootPath = process.env.ROOT_PATH || '/api/v1'
+
 const corsOptions = {
   origin: process.env.CORS_ORIGIN,
   methods: 'GET,PUT,PATCH,POST,DELETE',
@@ -20,10 +23,19 @@ app.use(express.json())
 
 app.use(cors(corsOptions))
 
+app.get(rootPath, (req, res) => {
+  const currentHost = req.protocol + '://' + req.get('host') + req.originalUrl
+  res.status(200).send({ message: `🚀 Server is running at ${currentHost}`, environment: node_env })
+})
+
 app.use('/api', accessTokenValidator, rootRouter)
+
+app.get('*', (_, res) => {
+  res.status(404).send({ status: 404, message: 'Page Not Found!' })
+})
 
 app.use(defaultErrorHandler)
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`🚀 Server started at port: ${port}\n🚨️ Environment: ${node_env}`)
 })
