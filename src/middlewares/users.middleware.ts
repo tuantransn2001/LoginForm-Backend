@@ -11,7 +11,6 @@ import { ErrorWithStatus } from '~/models/Errors'
 import usersServices from '~/services/users.services'
 import { UserDepartment, UserRole, UserStatus } from '~/constants/enums'
 import { routes_exclude_access_token } from '~/constants/common'
-import { ObjectId } from 'mongodb'
 
 const passwordSchema: ParamSchema = {
   notEmpty: {
