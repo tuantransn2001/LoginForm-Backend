@@ -1,6 +1,4 @@
 import { ObjectId } from 'mongodb'
-import { UserDepartment, UserRole, UserStatus, UserVerifyStatus } from '~/constants/enums'
-import S3Service from '~/libs/aws/s3'
 export interface UserType {
   _id?: ObjectId
   name?: string
@@ -12,15 +10,10 @@ export interface UserType {
   citizen_identification?: string
   birth_place?: string
   educational_background?: string
-  role?: UserRole
-  timeline?: { status: UserStatus; start_date: Date }[]
   avatar_url?: string
-  status?: UserStatus | null
   password_hash?: string
   email_verify_token?: string
   forgot_password_token?: string
-  verify?: UserVerifyStatus
-  department?: UserDepartment | null
   contract?: string
   contract_type?: string
   health_insurance?: boolean
@@ -43,15 +36,10 @@ export default class User {
   citizen_identification?: string
   birth_place?: string
   educational_background?: string
-  role?: UserRole
-  timeline?: { status: UserStatus; start_date: Date }[]
   avatar_url?: string
-  status?: UserStatus | null
   password_hash?: string
   email_verify_token?: string
   forgot_password_token?: string
-  verify?: UserVerifyStatus
-  department?: UserDepartment | null
   basic_salary?: string
   contract?: string
   contract_type?: string
@@ -75,30 +63,23 @@ export default class User {
     this.citizen_identification = user.citizen_identification || ''
     this.birth_place = user.birth_place || ''
     this.educational_background = user.educational_background || ''
-    this.role = user.role
-    this.timeline = user.timeline || []
     this.avatar_url = user.avatar_url || ''
     this.password_hash = user.password_hash || ''
     this.email_verify_token = user.email_verify_token || ''
     this.forgot_password_token = user.forgot_password_token || ''
-    this.verify = user.verify || UserVerifyStatus.Unverified
-    this.department = user.department
     this.basic_salary = user.basic_salary || ''
     this.contract = user.contract || ''
     this.contract_type = user.contract_type || ''
     this.health_insurance = user.health_insurance || false
     this.social_insurance = user.social_insurance || false
     this.support = user.support || false
-    this.status = user.status
     this.is_deleted = user.is_deleted || false
     this.created_at = user.created_at || date
     this.updated_at = user.updated_at || date
   }
 
-  static async toDto(user?: UserType | null): Promise<UserType | object> {
+  static toDto(user?: UserType | null): UserType | object {
     if (!user) return {}
-
-    const new_avatar_url = await S3Service.generateSignedUrlIncludeCheckExpire(user.avatar_url)
 
     return {
       id: user._id,
@@ -109,19 +90,14 @@ export default class User {
       phone_number: user.phone_number,
       email: user.email,
       citizen_identification: user.citizen_identification,
-      role: user.role,
-      avatar_url: new_avatar_url,
       birth_place: user.birth_place,
       educational_background: user.educational_background,
-      department: user.department,
       contract: user.contract,
       contract_type: user.contract_type,
       basic_salary: user.basic_salary,
       health_insurance: user.health_insurance,
       social_insurance: user.social_insurance,
-      support: user.support,
-      status: user.status,
-      timeline: user.timeline
+      support: user.support
     }
   }
 }

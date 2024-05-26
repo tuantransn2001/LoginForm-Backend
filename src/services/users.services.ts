@@ -3,12 +3,11 @@ import { ObjectId } from 'mongodb'
 
 import { signToken } from '~/utils/jwt'
 import { hashPassword } from '~/utils/crypto'
-import { TokenType, UserStatus } from '~/constants/enums'
 
 import User from '~/models/schemas/User.schema'
 import instanceMongodb from './database.services'
 import RefreshToken from '~/models/schemas/RefreshToken.schema'
-import { RegisterRequestBody, UpdateUserRequestBody } from '~/models/requests/User.requests'
+import { TokenType } from '~/constants/tokens'
 
 config()
 
@@ -43,25 +42,6 @@ class UsersService {
     return Promise.all([this.signAccessToken(user_id), this.signRefreshToken(user_id)])
   }
 
-  async register(payload: RegisterRequestBody) {
-    const user_id = new ObjectId()
-    await instanceMongodb.users.insertOne(
-      new User({
-        ...payload,
-        _id: user_id,
-        password_hash: hashPassword(payload.password),
-        phone_number: payload.phone_number
-      })
-    )
-
-    const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id.toString())
-    await instanceMongodb.refreshToken.insertOne(
-      new RefreshToken({ user_id: new ObjectId(user_id), token: refresh_token })
-    )
-
-    return { access_token, refresh_token }
-  }
-
   async login(user_id: string) {
     const [access_token, refresh_token] = await this.signAccessAndRefreshToken(user_id)
     await instanceMongodb.refreshToken.insertOne(
@@ -69,18 +49,6 @@ class UsersService {
     )
 
     return { access_token, refresh_token }
-  }
-
-  async refreshToken(user_id: string, refresh_token: string) {
-    const [access_token, new_refresh_token] = await this.signAccessAndRefreshToken(user_id)
-
-    await instanceMongodb.refreshToken.findOneAndUpdate(
-      { token: refresh_token, user_id: new ObjectId(user_id) },
-      { $set: { token: new_refresh_token } },
-      { includeResultMetadata: true, returnDocument: 'after' }
-    )
-
-    return { access_token, refresh_token: new_refresh_token }
   }
 
   async checkEmailExist(email: string) {
@@ -130,37 +98,13 @@ class UsersService {
     return result
   }
 
-  async updateOne(payload: UpdateUserRequestBody) {
-    const { id, ...rest } = payload
-    const now = new Date()
-
-    const result = await instanceMongodb.users
-      .findOneAndUpdate(
-        { _id: new ObjectId(id) },
-        { $set: { ...rest, updated_at: now } },
-        { includeResultMetadata: true, returnDocument: 'after' }
-      )
-      .then(async (response) => {
-        if (Object.prototype.hasOwnProperty.call(payload, 'status')) {
-          const updateTimeline: { status: UserStatus; start_date: Date }[] = response.value?.timeline || []
-          updateTimeline.push({
-            status: response.value?.status as UserStatus,
-            start_date: new Date()
-          })
-          return await instanceMongodb.users
-            .findOneAndUpdate(
-              { _id: new ObjectId(id) },
-              { $set: { timeline: updateTimeline } },
-              { includeResultMetadata: true, returnDocument: 'after' }
-            )
-            .then(async (res) => await User.toDto(res.value))
-        }
-      })
-
-    return result
-  }
-
   async checkLoginValid(phone_number: string, password: string) {
+    console.log({
+      phone_number,
+      password,
+      password_hash: hashPassword(password),
+      password_from_db: await usersService.findAll({ offset: 1, limit: 100 })
+    })
     const user = await instanceMongodb.users.findOne({
       phone_number,
       password_hash: hashPassword(password),
@@ -175,5 +119,5 @@ class UsersService {
   }
 }
 
-const usersServices = new UsersService()
-export default usersServices
+const usersService = new UsersService()
+export default usersService
